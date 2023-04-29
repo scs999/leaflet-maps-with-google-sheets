@@ -70,7 +70,7 @@ $(window).on('load', function() {
     var layers = {};
 
     for (var i in points) {
-      var group = points[i].Group;
+      var group = points[i].Categoria;
       if (group && groups.indexOf(group) === -1) {
         // Add group to groups
         groups.push(group);
@@ -213,7 +213,7 @@ $(window).on('load', function() {
       function updateTable() {
         var pointsVisible = [];
         for (i in points) {
-          if (map.hasLayer(layers[points[i].Group]) &&
+          if (map.hasLayer(layers[points[i].Categoria]) &&
               map.getBounds().contains(L.latLng(points[i].Latitude, points[i].Longitude))) {
             pointsVisible.push(points[i]);
           }
@@ -928,7 +928,7 @@ $(window).on('load', function() {
   function addBaseMap() {
     var basemap = trySetting('_tileProvider', 'CartoDB.Positron');
     L.tileLayer.provider(basemap, {
-      maxZoom: 18
+      maxZoom: 20
     }).addTo(map);
     L.control.attribution({
       position: trySetting('_mapAttribution', 'bottomright')
