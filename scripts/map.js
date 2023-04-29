@@ -129,7 +129,7 @@ $(window).on('load', function() {
         var marker = L.marker([point.Latitude, point.Longitude], {icon: icon})
           .bindPopup("<b>" + point['Nome'] + '</b><br>' +
           (point['Image'] ? ('<img src="' + point['Image'] + '"><br>') : '') +
-          point['Descrição']);
+          point['Description']);
 
         if (layers !== undefined && layers.length !== 1) {
           marker.addTo(layers[point.Categoria]);
@@ -820,8 +820,8 @@ $(window).on('load', function() {
             pane: 'shadowPane'
           }).addTo(map);
 
-          if (p[index]['Descrição'] && p[index]['Descrição'] != '') {
-            line.bindPopup(p[index]['Descrição']);
+          if (p[index]['Description'] && p[index]['Description'] != '') {
+            line.bindPopup(p[index]['Description']);
           }
 
           polylinesLegend.addOverlay(line,
