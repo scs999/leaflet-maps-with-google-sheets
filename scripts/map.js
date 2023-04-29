@@ -1,6 +1,6 @@
 $(window).on('load', function() {
   var documentSettings = {};
-  var group2color = {};
+  var categoria2color = {};
 
   var polygonSettings = [];
   var polygonsLegend;
@@ -62,33 +62,33 @@ $(window).on('load', function() {
 
 
   /**
-   * Given a collection of points, determines the layers based on 'Group'
+   * Given a collection of points, determines the layers based on 'Categoria'
    * column in the spreadsheet.
    */
   function determineLayers(points) {
-    var groups = [];
+    var categorias = [];
     var layers = {};
 
     for (var i in points) {
-      var group = points[i].Group;
-      if (group && groups.indexOf(group) === -1) {
-        // Add group to groups
-        groups.push(group);
+      var categoria = points[i].Categoria;
+      if (categoria && categorias.indexOf(categoria) === -1) {
+        // Add categoria to categorias
+        categorias.push(categoria);
 
         // Add color to the crosswalk
-        group2color[ group ] = points[i]['Marker Icon'].indexOf('.') > 0
+        categoria2color[ categoria ] = points[i]['Marker Icon'].indexOf('.') > 0
           ? points[i]['Marker Icon']
           : points[i]['Marker Color'];
       }
     }
 
     // if none of the points have named layers, return no layers
-    if (groups.length === 0) {
+    if (categorias.length === 0) {
       layers = undefined;
     } else {
-      for (var i in groups) {
-        var name = groups[i];
-        layers[name] = L.layerGroup();
+      for (var i in categorias) {
+        var name = categorias[i];
+        layers[name] = L.layerCategoria();
         layers[name].addTo(map);
       }
     }
@@ -127,32 +127,32 @@ $(window).on('load', function() {
 
       if (point.Latitude !== '' && point.Longitude !== '') {
         var marker = L.marker([point.Latitude, point.Longitude], {icon: icon})
-          .bindPopup("<b>" + point['Name'] + '</b><br>' +
+          .bindPopup("<b>" + point['Nome'] + '</b><br>' +
           (point['Image'] ? ('<img src="' + point['Image'] + '"><br>') : '') +
-          point['Description']);
+          point['Descrição']);
 
         if (layers !== undefined && layers.length !== 1) {
-          marker.addTo(layers[point.Group]);
+          marker.addTo(layers[point.Categoria]);
         }
 
         markerArray.push(marker);
       }
     }
 
-    var group = L.featureGroup(markerArray);
+    var categoria = L.featureCategoria(markerArray);
     var clusters = (getSetting('_markercluster') === 'on') ? true : false;
 
     // if layers.length === 0, add points to map instead of layer
     if (layers === undefined || layers.length === 0) {
       map.addLayer(
         clusters
-        ? L.markerClusterGroup().addLayer(group).addTo(map)
-        : group
+        ? L.markerClusterCategoria().addLayer(categoria).addTo(map)
+        : categoria
       );
     } else {
       if (clusters) {
         // Add multilayer cluster support
-        multilayerClusterSupport = L.markerClusterGroup.layerSupport();
+        multilayerClusterSupport = L.markerClusterCategoria.layerSupport();
         multilayerClusterSupport.addTo(map);
 
         for (i in layers) {
@@ -213,7 +213,7 @@ $(window).on('load', function() {
       function updateTable() {
         var pointsVisible = [];
         for (i in points) {
-          if (map.hasLayer(layers[points[i].Group]) &&
+          if (map.hasLayer(layers[points[i].Categoria]) &&
               map.getBounds().contains(L.latLng(points[i].Latitude, points[i].Longitude))) {
             pointsVisible.push(points[i]);
           }
@@ -260,7 +260,7 @@ $(window).on('load', function() {
     }
 
     completePoints = true;
-    return group;
+    return categoria;
   }
 
   var polygon = 0; // current active polygon
@@ -406,7 +406,7 @@ $(window).on('load', function() {
 
     // Generate polygon labels layers
     for (var i in allTextLabels) {
-      var g = L.featureGroup(allTextLabels[i]);
+      var g = L.featureCategoria(allTextLabels[i]);
       allTextLabelsLayers.push(g);
     }
 
@@ -610,15 +610,15 @@ $(window).on('load', function() {
 
     // Add point markers to the map
     var layers;
-    var group = '';
+    var categoria = '';
     if (points && points.length > 0) {
       layers = determineLayers(points);
-      group = mapPoints(points, layers);
+      categoria = mapPoints(points, layers);
     } else {
       completePoints = true;
     }
 
-    centerAndZoomMap(group);
+    centerAndZoomMap(categoria);
 
     // Add polylines
     if (polylines && polylines.length > 0) {
@@ -687,10 +687,10 @@ $(window).on('load', function() {
     // Append icons to categories in markers legend
     $('#points-legend label span').each(function(i) {
       var g = $(this).text().trim();
-      var legendIcon = (group2color[ g ].indexOf('.') > 0)
-        ? '<img src="' + group2color[ g ] + '" class="markers-legend-icon">'
+      var legendIcon = (categoria2color[ g ].indexOf('.') > 0)
+        ? '<img src="' + categoria2color[ g ] + '" class="markers-legend-icon">'
         : '&nbsp;<i class="fas fa-map-marker" style="color: '
-          + group2color[ g ]
+          + categoria2color[ g ]
           + '"></i>';
       $(this).prepend(legendIcon);
     });
@@ -820,8 +820,8 @@ $(window).on('load', function() {
             pane: 'shadowPane'
           }).addTo(map);
 
-          if (p[index]['Description'] && p[index]['Description'] != '') {
-            line.bindPopup(p[index]['Description']);
+          if (p[index]['Descrição'] && p[index]['Descrição'] != '') {
+            line.bindPopup(p[index]['Descrição']);
           }
 
           polylinesLegend.addOverlay(line,
@@ -928,7 +928,7 @@ $(window).on('load', function() {
   function addBaseMap() {
     var basemap = trySetting('_tileProvider', 'CartoDB.Positron');
     L.tileLayer.provider(basemap, {
-      maxZoom: 18
+      maxZoom: 20
     }).addTo(map);
     L.control.attribution({
       position: trySetting('_mapAttribution', 'bottomright')
